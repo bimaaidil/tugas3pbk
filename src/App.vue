@@ -221,6 +221,7 @@ ul li span:hover {
 
 .filters button {
   padding: 10px 20px; 
+  margin:10px 10px;
 }
 
 .button-74 {
@@ -231,6 +232,7 @@ ul li span:hover {
   padding: 10px 20px;
   border: none;
   border-radius: 10px;
+  margin:10px 10px;
 }
 
 .button-74:hover {
