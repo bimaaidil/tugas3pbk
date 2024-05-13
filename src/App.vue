@@ -259,4 +259,9 @@ ul li span:hover {
 .checked {
   text-decoration: line-through;
 }
+
+.post-list{
+  color: #ffffff;
+}
+
 </style>
