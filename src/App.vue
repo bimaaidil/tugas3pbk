@@ -6,7 +6,7 @@
         <button @click="toggleView('todo')" class="button-74">
           To-Do list
         </button>
-        <button @click="toggleView('post')" class="button-74">
+         <button @click="toggleView('post')" class="button-74">
           tampilkan postingan
         </button>
         <select v-model="selectedUser" class="button-74">
