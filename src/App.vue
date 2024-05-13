@@ -2,42 +2,85 @@
   <div class="container">
     <div class="todo-app">
       <h1>Jadwal Kegiatan! <br> Pilih Kegiatan</h1>
-      <div class="row">
+      <div class="filters">
+        <button @click="toggleView('todo')" class="button-74">
+          To-Do list
+        </button>
+        <button @click="toggleView('post')" class="button-74">
+          tampilkan postingan
+        </button>
+        <select v-model="selectedUser" class="button-74">
+          <option value="">Select User</option>
+          <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+        </select>
+      </div>
+      <div v-if="view === 'todo'" class="row">
         <input type="text" v-model="newTask" placeholder="Ketik kegiatan">
         <button @click="addTask">ADD</button>
       </div>
-      <div class="filters">
+      <div v-if="view === 'todo'" class="filters">
         <button @click="hideCompleted = !hideCompleted" class="button-74">
           {{ hideCompleted ? 'Tampil' : 'Sembunyi' }}
         </button>
       </div>
       <div class="list">
-      <ul class="task-list">
-        <li v-for="(task,) in filteredTodos" :key="task.id" :class="{ checked: task.checked }" @click="toggleTask(task)">
-          <span v-if="!task.editing">{{ task.text }}</span>
-          <input v-else type="text" v-model="task.updatedText">
-          <span @click.stop="editTask(task)" v-if="!task.editing">edit</span>
-          <span @click.stop="updateTask(task)" v-else>Save</span>
-          <span @click.stop="removeTask(task)">delete</span>
-        </li>
-      </ul>
-    </div>
+        <ul v-if="view === 'todo'" class="task-list">
+          <li v-for="(task,) in filteredTodos" :key="task.id" :class="{ checked: task.checked }" @click="toggleTask(task)">
+            <span v-if="!task.editing">{{ task.text }}</span>
+            <input v-else type="text" v-model="task.updatedText">
+            <span @click.stop="editTask(task)" v-if="!task.editing">edit</span>
+            <span @click.stop="updateTask(task)" v-else>Save</span>
+            <span @click.stop="removeTask(task)">delete</span>
+          </li>
+        </ul>
+        <div v-else-if="view === 'post'" class="post-list">
+          <div v-for="post in filteredPosts" :key="post.id">
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.body }}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
+const view = ref('todo');
+const selectedUser = ref('');
+const users = ref([]);
 const newTask = ref('');
 const tasks = ref([]);
 const hideCompleted = ref(false);
+
+onMounted(async () => {
+  const response = await fetch('https://jsonplaceholder.typicode.com/users');
+  const data = await response.json();
+  users.value = data;
+});
+
+const posts = ref([]);
+onMounted(async () => {
+  const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+  const data = await response.json();
+  posts.value = data;
+});
 
 const filteredTodos = computed(() => {
   return hideCompleted.value
     ? tasks.value.filter(task => !task.checked)
     : tasks.value;
 });
+
+const filteredPosts = computed(() => {
+  if (!selectedUser.value) return [];
+  return posts.value.filter(post => post.userId === parseInt(selectedUser.value));
+});
+
+function toggleView(selectedView) {
+  view.value = selectedView;
+}
 
 function addTask() {
   if (newTask.value.trim() === '') {
@@ -84,7 +127,8 @@ function loadData() {
 
 loadData();
 </script>
-<style scoped>
+<style>
+
 
 .todo-app {
   width: 100%;
@@ -97,7 +141,7 @@ loadData();
 
 .todo-app h1 {
   text-align: center;
-  color: rgb(226, 206, 206);
+  color: rgb(103, 11, 11);
   margin-bottom: 30px;
 }
 
