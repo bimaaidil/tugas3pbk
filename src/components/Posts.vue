@@ -1,51 +1,35 @@
 <template>
-  <div class="container">
-    <div class="todo-app">
-      <Header :users="users" :selectedUser="selectedUser" @toggleView="toggleView" @selectUser="selectUser" />
-      <Todos v-if="view === 'todo'" :tasks="tasks" />
-      <Posts v-if="view === 'post'" :selectedUser="selectedUser" />
+    <div class="post-list">
+      <div v-for="post in filteredPosts" :key="post.id">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.body }}</p>
+      </div>
     </div>
-  </div>
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-import Header from './components/Header.vue';
-import Todos from './components/Todos.vue';
-import Posts from './components/Posts.vue';
-
-const view = ref('todo');
-const selectedUser = ref('');
-const users = ref([]);
-const tasks = ref([]);
-
-onMounted(async () => {
-  const response = await fetch('https://jsonplaceholder.typicode.com/users');
-  const data = await response.json();
-  users.value = data;
-});
-
-function toggleView(selectedView) {
-  view.value = selectedView;
-}
-
-function selectUser(user) {
-  selectedUser.value = user;
-}
-
-function saveData() {
-  localStorage.setItem("tasks", JSON.stringify(tasks.value));
-}
-
-function loadData() {
-  const savedTasks = localStorage.getItem("tasks");
-  tasks.value = savedTasks ? JSON.parse(savedTasks) : [];
-}
-
-loadData();
-</script>
-
-<style>
+  </template>
+  
+  <script setup>
+  import { ref, computed, onMounted } from 'vue';
+  
+  // Menerima props dari komponen induk
+  const props = defineProps({
+    selectedUser: String
+  });
+  
+  const posts = ref([]);
+  
+  onMounted(async () => {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+    const data = await response.json();
+    posts.value = data;
+  });
+  
+  const filteredPosts = computed(() => {
+    if (!props.selectedUser) return [];
+    return posts.value.filter(post => post.userId === parseInt(props.selectedUser));
+  });
+  </script>
+  
+  <style scoped>
 .todo-app {
   width: 100%;
   max-width: 600px;
@@ -179,5 +163,4 @@ ul li span:hover {
 .post-list{
   color: #ffffff;
 }
-
 </style>

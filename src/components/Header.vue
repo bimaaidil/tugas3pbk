@@ -1,51 +1,44 @@
 <template>
-  <div class="container">
-    <div class="todo-app">
-      <Header :users="users" :selectedUser="selectedUser" @toggleView="toggleView" @selectUser="selectUser" />
-      <Todos v-if="view === 'todo'" :tasks="tasks" />
-      <Posts v-if="view === 'post'" :selectedUser="selectedUser" />
+    <div>
+      <h1>Jadwal Kegiatan! <br> Pilih Kegiatan</h1>
+      <div class="filters">
+        <button @click="toggleView('todo')" class="button-74">To-Do list</button>
+        <button @click="toggleView('post')" class="button-74">Tampilkan Postingan</button>
+        <select v-model="localSelectedUser" @change="emitSelectUser" class="button-74">
+          <option value="">Pilih Pengguna</option>
+          <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+        </select>
+      </div>
     </div>
-  </div>
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-import Header from './components/Header.vue';
-import Todos from './components/Todos.vue';
-import Posts from './components/Posts.vue';
-
-const view = ref('todo');
-const selectedUser = ref('');
-const users = ref([]);
-const tasks = ref([]);
-
-onMounted(async () => {
-  const response = await fetch('https://jsonplaceholder.typicode.com/users');
-  const data = await response.json();
-  users.value = data;
-});
-
-function toggleView(selectedView) {
-  view.value = selectedView;
-}
-
-function selectUser(user) {
-  selectedUser.value = user;
-}
-
-function saveData() {
-  localStorage.setItem("tasks", JSON.stringify(tasks.value));
-}
-
-function loadData() {
-  const savedTasks = localStorage.getItem("tasks");
-  tasks.value = savedTasks ? JSON.parse(savedTasks) : [];
-}
-
-loadData();
-</script>
-
+  </template>
+  
+  <script setup>
+  import { ref, watchEffect } from 'vue';
+  
+  // Menerima props dari komponen induk
+  const props = defineProps({
+    users: Array,
+    selectedUser: String
+  });
+  
+  const emit = defineEmits(['toggleView', 'selectUser']);
+  const localSelectedUser = ref(props.selectedUser);
+  
+  function toggleView(selectedView) {
+    emit('toggleView', selectedView);
+  }
+  
+  function emitSelectUser() {
+    emit('selectUser', localSelectedUser.value);
+  }
+  
+  watchEffect(() => {
+    localSelectedUser.value = props.selectedUser;
+  });
+  </script>
+  
 <style>
+
 .todo-app {
   width: 100%;
   max-width: 600px;
@@ -179,5 +172,5 @@ ul li span:hover {
 .post-list{
   color: #ffffff;
 }
-
 </style>
+  
