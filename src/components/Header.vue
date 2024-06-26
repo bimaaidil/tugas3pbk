@@ -38,6 +38,18 @@
   </script>
   
 <style>
+.header {
+  text-align: center;
+}
+
+.user-select {
+  font-size: 12px;
+  text-align: center;
+  margin: 10px auto;
+  padding: 5px;
+  display: block;
+}
+
 
 .todo-app {
   width: 100%;

@@ -4,12 +4,14 @@
       <Header :users="users" :selectedUser="selectedUser" @toggleView="toggleView" @selectUser="selectUser" />
       <Todos v-if="view === 'todo'" :tasks="tasks" />
       <Posts v-if="view === 'post'" :selectedUser="selectedUser" />
+      <button class="button-74" @click="navigateTo('/albums')">Go to Albums</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import Header from './components/Header.vue';
 import Todos from './components/Todos.vue';
 import Posts from './components/Posts.vue';
@@ -18,6 +20,7 @@ const view = ref('todo');
 const selectedUser = ref('');
 const users = ref([]);
 const tasks = ref([]);
+const router = useRouter();
 
 onMounted(async () => {
   const response = await fetch('https://jsonplaceholder.typicode.com/users');
@@ -33,6 +36,10 @@ function selectUser(user) {
   selectedUser.value = user;
 }
 
+function navigateTo(path) {
+  router.push(path); // Use the router to navigate
+}
+
 function saveData() {
   localStorage.setItem("tasks", JSON.stringify(tasks.value));
 }
@@ -46,6 +53,19 @@ loadData();
 </script>
 
 <style>
+
+.header {
+  text-align: center;
+}
+
+.user-select {
+  font-size: 12px;
+  text-align: center;
+  margin: 10px auto;
+  padding: 5px;
+  display: block;
+}
+
 .todo-app {
   width: 100%;
   max-width: 600px;
@@ -101,7 +121,7 @@ ul {
 
 ul li {
   list-style: none;
-  font-size: 20px;
+  font-size: 14px;
   padding: 10px;
   user-select: none;
   cursor: pointer;
@@ -155,7 +175,6 @@ ul li span:hover {
   background-color: #780000;
 }
 
-
 .task-item {
   display: flex;
   align-items: center;
@@ -176,8 +195,7 @@ ul li span:hover {
   text-decoration: line-through;
 }
 
-.post-list{
+.post-list {
   color: #ffffff;
 }
-
 </style>

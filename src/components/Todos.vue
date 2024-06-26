@@ -141,7 +141,7 @@ ul {
 
 ul li {
   list-style: none;
-  font-size: 20px;
+  font-size: 14px;
   padding: 10px;
   user-select: none;
   cursor: pointer;
